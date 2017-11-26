@@ -1,25 +1,43 @@
+import webpack from "webpack";
+import CleanWebpackPlugin from  "clean-webpack-plugin";
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
 var path = require("path");
+
 var DIST_DIR = path.resolve(__dirname, "dist");
 var SRC_DIR = path.resolve(__dirname, "client");
 
-var config = {
+export default  {
     devtool: 'eval-source-map',
-    entry: SRC_DIR + "/index.js",
+
+    entry: [
+        'webpack-hot-middleware/client',
+        SRC_DIR + "/index.js"
+    ],
     output: {
         path: DIST_DIR + "/app",
         filename: "bundle.js",
         publicPath: "/app/"
     },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+    ],
     module: {
         rules: [
             {
                 test: /\.js?/,
                 exclude: /node_modules/,
                 include: SRC_DIR,
-                loader: "babel-loader",
-                options: {
-                    presets: ["react", "es2015", "stage-2"]
-                }
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ["react", "es2015", "stage-2"]
+                        }
+                    }
+                ]
+
             },
             {
                 test: /\.html$/,
@@ -28,5 +46,3 @@ var config = {
         ]
     }
 };
-
-module.exports = config;
